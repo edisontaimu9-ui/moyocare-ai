@@ -10,6 +10,9 @@ import { ProfileScreen } from "./screens/ProfileScreen.jsx";
 
 /* ---------------------------------------------------------------------
    APP
+   Real app shell — fills the actual viewport (no decorative phone
+   frame). Content is capped at a comfortable mobile width and centered
+   on wider screens, the same pattern real responsive PWAs use.
 --------------------------------------------------------------------- */
 export default function App() {
   const [dark, setDark] = useState(false);
@@ -25,24 +28,31 @@ export default function App() {
   };
 
   return (
-    <div style={{ width: "100%", minHeight: "100vh", background: dark ? "#040a08" : "#EAE3D2", display: "flex", alignItems: "center", justifyContent: "center", padding: 20, fontFamily: "Inter, sans-serif" }}>
+    <div
+      style={{
+        width: "100%",
+        minHeight: "100dvh",
+        background: c.bg,
+        fontFamily: "Inter, sans-serif",
+        display: "flex",
+        justifyContent: "center",
+      }}
+    >
       <style>{FONTS}</style>
       <div
         style={{
-          width: 400,
-          height: 830,
+          width: "100%",
+          maxWidth: 480,
+          minHeight: "100dvh",
           background: c.bg,
-          borderRadius: 42,
-          border: `10px solid ${dark ? "#000" : "#1a1a1a"}`,
-          boxShadow: "0 30px 60px -20px rgba(0,0,0,0.45)",
-          overflow: "hidden",
           display: "flex",
           flexDirection: "column",
           position: "relative",
         }}
       >
-        <div style={{ position: "absolute", top: 0, left: "50%", transform: "translateX(-50%)", width: 130, height: 26, background: dark ? "#000" : "#1a1a1a", borderRadius: "0 0 16px 16px", zIndex: 20 }} />
-        <div style={{ flex: 1, overflowY: "auto" }}>{screens[tab]}</div>
+        <div style={{ flex: 1, overflowY: "auto", paddingBottom: "env(safe-area-inset-bottom, 0px)" }}>
+          {screens[tab]}
+        </div>
         <BottomNav c={c} active={tab} setActive={setTab} />
       </div>
     </div>
