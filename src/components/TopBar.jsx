@@ -19,11 +19,6 @@ export function TopBar({ c, dark, setDark, title, onBack }) {
           <div style={{ fontFamily: "Fraunces, serif", fontSize: 17, fontWeight: 600, color: c.ink, lineHeight: 1.1 }}>
             {title || "MoyoCare AI"}
           </div>
-          {!onBack && (
-            <div style={{ fontFamily: "Inter, sans-serif", fontSize: 10.5, color: c.inkFaint, letterSpacing: 0.3 }}>
-              Chakudya Nutrition Registry
-            </div>
-          )}
         </div>
       </div>
       <div style={{ display: "flex", gap: 8 }}>
