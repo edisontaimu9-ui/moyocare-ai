@@ -16,7 +16,7 @@ npm run dev
 `npm run dev` starts a local server (prints a URL like `http://localhost:5173`)
 — open it in the Termux browser or any browser on the same device.
 
-## Deploy to GitHub Pages
+## Deploy to GitHub Pages (via GitHub Actions)
 
 One-time:
 
@@ -30,15 +30,14 @@ git remote add origin https://github.com/edisontaimu9-ui/moyocare-ai.git
 git push -u origin main
 ```
 
-Then to build and publish to the `gh-pages` branch:
+Then in the repo on GitHub: **Settings → Pages** → under "Build and
+deployment," set **Source** to **GitHub Actions**.
 
-```
-npm run deploy
-```
-
-This runs `vite build` (output to `dist/`) then pushes `dist/` to the
-`gh-pages` branch via the `gh-pages` package. In the repo's Settings → Pages,
-set the source to the `gh-pages` branch, root.
+From then on, every `git push` to `main` triggers `.github/workflows/deploy.yml`,
+which installs dependencies, runs `npm run build`, and publishes `dist/` to
+Pages automatically. No local build or `npm run deploy` step needed — just
+push. Check the **Actions** tab on GitHub to watch a deploy in progress or see
+why one failed.
 
 If you want a custom domain, add a `CNAME` file inside `public/` containing
 just the domain — Vite copies anything in `public/` into `dist/` unchanged.
