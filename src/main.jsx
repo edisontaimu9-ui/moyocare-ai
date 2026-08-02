@@ -1,9 +1,9 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import MoyoCareAI from "./MoyoCareAI.jsx";
+import App from "./App.jsx";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
-    <MoyoCareAI />
+    <App />
   </React.StrictMode>
 );
