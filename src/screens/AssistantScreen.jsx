@@ -4,7 +4,7 @@ import { TopBar } from "../components/TopBar.jsx";
 import { WovenRule } from "../components/WovenRule.jsx";
 import { MoyoMark } from "../components/MoyoMark.jsx";
 import { AssistantBubble } from "../components/AssistantBubble.jsx";
-import { askMoyoCareAI, ThanziProxyError } from "../data/thanziProxy.js";
+import { askChakudya, ChakudyaAskError } from "../data/chakudyaRag.js";
 
 /* ---------------------------------------------------------------------
    AI ASSISTANT
@@ -23,10 +23,10 @@ export function AssistantScreen({ c, dark, setDark }) {
     setMessages((m) => [...m, { role: "user", text: q }]);
     setLoading(true);
     try {
-      const response = await askMoyoCareAI(q);
+      const response = await askChakudya(q);
       setMessages((m) => [...m, { role: "ai", response }]);
     } catch (err) {
-      const message = err instanceof ThanziProxyError ? err.message : "Something went wrong. Please try again.";
+      const message = err instanceof ChakudyaAskError ? err.message : "Something went wrong. Please try again.";
       setMessages((m) => [...m, { role: "ai-error", message }]);
     } finally {
       setLoading(false);
