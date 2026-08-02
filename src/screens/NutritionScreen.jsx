@@ -1,25 +1,20 @@
 import { useState } from "react";
 import {
-  ChevronDown, Sparkles, UtensilsCrossed,
-  Activity, Flame, TrendingUp, Droplets,
+  ChevronDown, Sparkles, UtensilsCrossed, Droplets,
 } from "lucide-react";
 import { TopBar } from "../components/TopBar.jsx";
 import { WovenRule } from "../components/WovenRule.jsx";
 import { Card, Chip, SectionLabel } from "../components/Primitives.jsx";
 import { FoodSearchPanel } from "../components/FoodSearchPanel.jsx";
+import { BiometricsCalculator } from "../components/BiometricsCalculator.jsx";
 
 /* ---------------------------------------------------------------------
    NUTRITION
 --------------------------------------------------------------------- */
 export function NutritionScreen({ c, dark, setDark }) {
   const [tab, setTab] = useState("search");
-  const [bmiForm, setBmiForm] = useState({ h: 165, w: 62 });
-  const bmi = (bmiForm.w / Math.pow(bmiForm.h / 100, 2)).toFixed(1);
 
   const calcList = [
-    { name: "BMI", icon: Activity, tone: "primary" },
-    { name: "BMR", icon: Flame, tone: "clay" },
-    { name: "TDEE", icon: TrendingUp, tone: "gold" },
     { name: "Diabetes Exchange", icon: Droplets, tone: "primary" },
     { name: "Renal Exchange", icon: Droplets, tone: "clay" },
     { name: "Enteral Feeding", icon: UtensilsCrossed, tone: "gold" },
@@ -78,36 +73,22 @@ export function NutritionScreen({ c, dark, setDark }) {
 
         {tab === "calc" && (
           <>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 16 }}>
+            <BiometricsCalculator c={c} />
+
+            <SectionLabel c={c}>More calculators</SectionLabel>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
               {calcList.map((cc, i) => (
-                <div key={i} style={{ background: c.surfaceSolid, border: `1px solid ${c.border}`, borderRadius: 14, padding: 12, display: "flex", alignItems: "center", gap: 9 }}>
+                <div key={i} style={{ background: c.surfaceSolid, border: `1px solid ${c.border}`, borderRadius: 14, padding: 12, display: "flex", alignItems: "center", gap: 9, opacity: 0.55 }}>
                   <div style={{ width: 30, height: 30, borderRadius: 10, background: toneSoft(cc.tone), display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
                     <cc.icon size={14} color={toneColor(cc.tone)} />
                   </div>
-                  <span style={{ fontFamily: "Inter, sans-serif", fontSize: 11.5, fontWeight: 600, color: c.ink, lineHeight: 1.25 }}>{cc.name}</span>
+                  <div>
+                    <span style={{ fontFamily: "Inter, sans-serif", fontSize: 11.5, fontWeight: 600, color: c.ink, lineHeight: 1.25, display: "block" }}>{cc.name}</span>
+                    <span style={{ fontFamily: "Inter, sans-serif", fontSize: 9.5, color: c.inkFaint }}>Coming soon</span>
+                  </div>
                 </div>
               ))}
             </div>
-
-            <SectionLabel c={c}>BMI calculator</SectionLabel>
-            <Card c={c} style={{ padding: 16 }}>
-              <div style={{ display: "flex", gap: 12, marginBottom: 14 }}>
-                <div style={{ flex: 1 }}>
-                  <label style={{ fontFamily: "Inter, sans-serif", fontSize: 10.5, color: c.inkFaint }}>Height (cm)</label>
-                  <input type="number" value={bmiForm.h} onChange={(e) => setBmiForm({ ...bmiForm, h: +e.target.value })}
-                    style={{ width: "100%", marginTop: 4, background: c.bgAlt, border: `1px solid ${c.border}`, borderRadius: 10, padding: "9px 10px", fontFamily: "IBM Plex Mono, monospace", fontSize: 13, color: c.ink, outline: "none" }} />
-                </div>
-                <div style={{ flex: 1 }}>
-                  <label style={{ fontFamily: "Inter, sans-serif", fontSize: 10.5, color: c.inkFaint }}>Weight (kg)</label>
-                  <input type="number" value={bmiForm.w} onChange={(e) => setBmiForm({ ...bmiForm, w: +e.target.value })}
-                    style={{ width: "100%", marginTop: 4, background: c.bgAlt, border: `1px solid ${c.border}`, borderRadius: 10, padding: "9px 10px", fontFamily: "IBM Plex Mono, monospace", fontSize: 13, color: c.ink, outline: "none" }} />
-                </div>
-              </div>
-              <div style={{ background: c.primarySoft, borderRadius: 12, padding: "12px 14px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                <span style={{ fontFamily: "Inter, sans-serif", fontSize: 12, fontWeight: 600, color: c.primary }}>Your BMI</span>
-                <span style={{ fontFamily: "IBM Plex Mono, monospace", fontSize: 18, fontWeight: 700, color: c.primary }}>{bmi}</span>
-              </div>
-            </Card>
           </>
         )}
       </div>
