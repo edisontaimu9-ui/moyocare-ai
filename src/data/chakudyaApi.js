@@ -68,30 +68,49 @@ export async function lookupBarcode(barcode) {
   return { food: body.data, source: body.source, cached: body.cached };
 }
 
-let exchangeListCache = null;
-
 /**
- * Fetch the full diabetes exchange list (~300 rows: id, food_name,
- * exchange_type, portion, kcal, kj, protein_g, carbs_g, fat_g). The API
- * caps each request at 100 rows, so this pages through with offset and
- * caches the combined result for the rest of the session.
+ * Fetch every row from a paginated list endpoint (the API caps each request
+ * at 100 rows via `limit`), combining pages until exhausted.
  */
-export async function getExchangeList() {
-  if (exchangeListCache) return exchangeListCache;
-
+async function fetchAllPaginated(path) {
   const all = [];
   let offset = 0;
   const limit = 100;
   while (true) {
-    const body = await request(`/exchange?limit=${limit}&offset=${offset}`);
+    const sep = path.includes("?") ? "&" : "?";
+    const body = await request(`${path}${sep}limit=${limit}&offset=${offset}`);
     const page = body.data ?? [];
     all.push(...page);
     if (page.length < limit || all.length >= (body.count ?? all.length)) break;
     offset += limit;
   }
-
-  exchangeListCache = all;
   return all;
+}
+
+let exchangeListCache = null;
+
+/**
+ * Fetch the full diabetes exchange list (~300 rows: id, food_name,
+ * exchange_type, portion, kcal, kj, protein_g, carbs_g, fat_g). Cached in
+ * memory for the rest of the session after the first call.
+ */
+export async function getExchangeList() {
+  if (!exchangeListCache) exchangeListCache = await fetchAllPaginated("/exchange");
+  return exchangeListCache;
+}
+
+let renalFoodsCache = null;
+
+/**
+ * Fetch the full renal-diet food list (~349 rows: id, name, code, grams,
+ * measure, energy_kj, protein, fat, cho, po4, na, k — all numeric fields
+ * come back as strings from the API, so callers should parseFloat them).
+ * No server-side search on this endpoint, so this fetches everything once
+ * and callers filter client-side. Cached for the rest of the session.
+ */
+export async function getRenalFoods() {
+  if (!renalFoodsCache) renalFoodsCache = await fetchAllPaginated("/renal");
+  return renalFoodsCache;
 }
 
 export { ChakudyaError };

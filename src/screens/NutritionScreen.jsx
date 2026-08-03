@@ -8,18 +8,19 @@ import { Card, Chip, SectionLabel } from "../components/Primitives.jsx";
 import { FoodSearchPanel } from "../components/FoodSearchPanel.jsx";
 import { BiometricsCalculator } from "../components/BiometricsCalculator.jsx";
 import { DiabetesExchangeBrowser } from "../components/DiabetesExchangeBrowser.jsx";
+import { RenalFoodBrowser } from "../components/RenalFoodBrowser.jsx";
 
 /* ---------------------------------------------------------------------
    NUTRITION
 --------------------------------------------------------------------- */
 export function NutritionScreen({ c, dark, setDark }) {
   const [tab, setTab] = useState("search");
-  const [expandedCalc, setExpandedCalc] = useState(null); // "diabetes" | null
+  const [expandedCalc, setExpandedCalc] = useState(null); // "diabetes" | "renal" | null
 
   const calcList = [
-    { name: "Diabetes Exchange", icon: Droplets, tone: "primary", enabled: true },
-    { name: "Renal Exchange", icon: Droplets, tone: "clay", enabled: false },
-    { name: "Enteral Feeding", icon: UtensilsCrossed, tone: "gold", enabled: false },
+    { name: "Diabetes Exchange", icon: Droplets, tone: "primary", enabled: true, key: "diabetes" },
+    { name: "Renal Exchange", icon: Droplets, tone: "clay", enabled: true, key: "renal" },
+    { name: "Enteral Feeding", icon: UtensilsCrossed, tone: "gold", enabled: false, key: "enteral" },
   ];
   const toneColor = (t) => (t === "primary" ? c.primary : t === "clay" ? c.clay : c.gold);
   const toneSoft = (t) => (t === "primary" ? c.primarySoft : t === "clay" ? c.claySoft : c.goldSoft);
@@ -80,11 +81,11 @@ export function NutritionScreen({ c, dark, setDark }) {
             <SectionLabel c={c}>More calculators</SectionLabel>
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: expandedCalc ? 16 : 0 }}>
               {calcList.map((cc, i) => {
-                const isOpen = cc.enabled && expandedCalc === "diabetes";
+                const isOpen = cc.enabled && expandedCalc === cc.key;
                 return (
                   <button
                     key={i}
-                    onClick={() => cc.enabled && setExpandedCalc(isOpen ? null : "diabetes")}
+                    onClick={() => cc.enabled && setExpandedCalc(isOpen ? null : cc.key)}
                     style={{
                       textAlign: "left", background: isOpen ? c.primarySoft : c.surfaceSolid,
                       border: `1px solid ${isOpen ? c.primary : c.border}`, borderRadius: 14, padding: 12,
@@ -105,6 +106,7 @@ export function NutritionScreen({ c, dark, setDark }) {
             </div>
 
             {expandedCalc === "diabetes" && <DiabetesExchangeBrowser c={c} />}
+            {expandedCalc === "renal" && <RenalFoodBrowser c={c} />}
           </>
         )}
       </div>
