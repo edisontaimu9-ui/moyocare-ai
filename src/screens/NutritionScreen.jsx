@@ -1,15 +1,14 @@
 import { useState } from "react";
-import {
-  ChevronDown, Sparkles, UtensilsCrossed, Droplets,
-} from "lucide-react";
+import { UtensilsCrossed, Droplets } from "lucide-react";
 import { TopBar } from "../components/TopBar.jsx";
 import { WovenRule } from "../components/WovenRule.jsx";
-import { Card, Chip, SectionLabel } from "../components/Primitives.jsx";
+import { Chip, SectionLabel } from "../components/Primitives.jsx";
 import { FoodSearchPanel } from "../components/FoodSearchPanel.jsx";
 import { BiometricsCalculator } from "../components/BiometricsCalculator.jsx";
 import { DiabetesExchangeBrowser } from "../components/DiabetesExchangeBrowser.jsx";
 import { RenalFoodBrowser } from "../components/RenalFoodBrowser.jsx";
 import { EnteralFormulaBrowser } from "../components/EnteralFormulaBrowser.jsx";
+import { MealLogPanel } from "../components/MealLogPanel.jsx";
 
 /* ---------------------------------------------------------------------
    NUTRITION
@@ -39,41 +38,7 @@ export function NutritionScreen({ c, dark, setDark }) {
 
         {tab === "search" && <FoodSearchPanel c={c} />}
 
-        {tab === "meal" && (
-          <>
-            <SectionLabel c={c}>Today's log</SectionLabel>
-            <Card c={c} style={{ padding: 14, marginBottom: 14 }}>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                  <div style={{ width: 34, height: 34, borderRadius: 11, background: c.primarySoft, display: "flex", alignItems: "center", justifyContent: "center" }}>
-                    <UtensilsCrossed size={15} color={c.primary} />
-                  </div>
-                  <div>
-                    <div style={{ fontFamily: "Inter, sans-serif", fontSize: 13, fontWeight: 600, color: c.ink }}>Breakfast · Nsima & beans</div>
-                    <div style={{ fontFamily: "Inter, sans-serif", fontSize: 10.5, color: c.inkFaint }}>7:40 AM · 420 kcal</div>
-                  </div>
-                </div>
-                <button style={{ background: c.primarySoft, border: "none", borderRadius: 10, width: 30, height: 30, display: "flex", alignItems: "center", justifyContent: "center" }}>
-                  <ChevronDown size={14} color={c.primary} />
-                </button>
-              </div>
-            </Card>
-
-            <SectionLabel c={c}>AI meal analysis</SectionLabel>
-            <Card c={c} style={{ padding: 15 }}>
-              <div style={{ display: "flex", gap: 8, alignItems: "center", marginBottom: 8 }}>
-                <Sparkles size={14} color={c.gold} />
-                <span style={{ fontFamily: "Inter, sans-serif", fontSize: 12, fontWeight: 700, color: c.ink }}>Nutrient breakdown & portion estimate</span>
-              </div>
-              <div style={{ fontFamily: "Inter, sans-serif", fontSize: 12.5, color: c.inkSoft, lineHeight: 1.55 }}>
-                Estimated portion: 1.5 cups nsima + ¾ cup bean relish. This meal is carbohydrate-forward and moderate in fibre. Adding a vegetable side would improve micronutrient density and slow glucose absorption.
-              </div>
-              <button style={{ marginTop: 12, width: "100%", background: c.primary, color: c.bg, border: "none", borderRadius: 12, padding: "10px", fontFamily: "Inter, sans-serif", fontSize: 12.5, fontWeight: 700, cursor: "pointer" }}>
-                Log this meal
-              </button>
-            </Card>
-          </>
-        )}
+        {tab === "meal" && <MealLogPanel c={c} />}
 
         {tab === "calc" && (
           <>
