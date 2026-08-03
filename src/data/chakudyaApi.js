@@ -113,4 +113,17 @@ export async function getRenalFoods() {
   return renalFoodsCache;
 }
 
+let enteralFormulasCache = null;
+
+/**
+ * Fetch the full enteral/oral formula list (~55 rows: id, formula, category,
+ * route, kcal_per_ml, kcal_per_500ml, protein_g_per_l, protein_pct_e,
+ * cho_g_per_l, fat_g_per_l, osmol, fibre_g_per_l, tags, notes). Fits in a
+ * single page; cached for the rest of the session.
+ */
+export async function getEnteralFormulas() {
+  if (!enteralFormulasCache) enteralFormulasCache = await fetchAllPaginated("/formulas");
+  return enteralFormulasCache;
+}
+
 export { ChakudyaError };

@@ -9,18 +9,19 @@ import { FoodSearchPanel } from "../components/FoodSearchPanel.jsx";
 import { BiometricsCalculator } from "../components/BiometricsCalculator.jsx";
 import { DiabetesExchangeBrowser } from "../components/DiabetesExchangeBrowser.jsx";
 import { RenalFoodBrowser } from "../components/RenalFoodBrowser.jsx";
+import { EnteralFormulaBrowser } from "../components/EnteralFormulaBrowser.jsx";
 
 /* ---------------------------------------------------------------------
    NUTRITION
 --------------------------------------------------------------------- */
 export function NutritionScreen({ c, dark, setDark }) {
   const [tab, setTab] = useState("search");
-  const [expandedCalc, setExpandedCalc] = useState(null); // "diabetes" | "renal" | null
+  const [expandedCalc, setExpandedCalc] = useState(null); // "diabetes" | "renal" | "enteral" | null
 
   const calcList = [
     { name: "Diabetes Exchange", icon: Droplets, tone: "primary", enabled: true, key: "diabetes" },
     { name: "Renal Exchange", icon: Droplets, tone: "clay", enabled: true, key: "renal" },
-    { name: "Enteral Feeding", icon: UtensilsCrossed, tone: "gold", enabled: false, key: "enteral" },
+    { name: "Enteral Feeding", icon: UtensilsCrossed, tone: "gold", enabled: true, key: "enteral" },
   ];
   const toneColor = (t) => (t === "primary" ? c.primary : t === "clay" ? c.clay : c.gold);
   const toneSoft = (t) => (t === "primary" ? c.primarySoft : t === "clay" ? c.claySoft : c.goldSoft);
@@ -107,6 +108,7 @@ export function NutritionScreen({ c, dark, setDark }) {
 
             {expandedCalc === "diabetes" && <DiabetesExchangeBrowser c={c} />}
             {expandedCalc === "renal" && <RenalFoodBrowser c={c} />}
+            {expandedCalc === "enteral" && <EnteralFormulaBrowser c={c} />}
           </>
         )}
       </div>
