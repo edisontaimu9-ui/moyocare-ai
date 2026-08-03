@@ -7,17 +7,19 @@ import { WovenRule } from "../components/WovenRule.jsx";
 import { Card, Chip, SectionLabel } from "../components/Primitives.jsx";
 import { FoodSearchPanel } from "../components/FoodSearchPanel.jsx";
 import { BiometricsCalculator } from "../components/BiometricsCalculator.jsx";
+import { DiabetesExchangeBrowser } from "../components/DiabetesExchangeBrowser.jsx";
 
 /* ---------------------------------------------------------------------
    NUTRITION
 --------------------------------------------------------------------- */
 export function NutritionScreen({ c, dark, setDark }) {
   const [tab, setTab] = useState("search");
+  const [expandedCalc, setExpandedCalc] = useState(null); // "diabetes" | null
 
   const calcList = [
-    { name: "Diabetes Exchange", icon: Droplets, tone: "primary" },
-    { name: "Renal Exchange", icon: Droplets, tone: "clay" },
-    { name: "Enteral Feeding", icon: UtensilsCrossed, tone: "gold" },
+    { name: "Diabetes Exchange", icon: Droplets, tone: "primary", enabled: true },
+    { name: "Renal Exchange", icon: Droplets, tone: "clay", enabled: false },
+    { name: "Enteral Feeding", icon: UtensilsCrossed, tone: "gold", enabled: false },
   ];
   const toneColor = (t) => (t === "primary" ? c.primary : t === "clay" ? c.clay : c.gold);
   const toneSoft = (t) => (t === "primary" ? c.primarySoft : t === "clay" ? c.claySoft : c.goldSoft);
@@ -76,19 +78,33 @@ export function NutritionScreen({ c, dark, setDark }) {
             <BiometricsCalculator c={c} />
 
             <SectionLabel c={c}>More calculators</SectionLabel>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
-              {calcList.map((cc, i) => (
-                <div key={i} style={{ background: c.surfaceSolid, border: `1px solid ${c.border}`, borderRadius: 14, padding: 12, display: "flex", alignItems: "center", gap: 9, opacity: 0.55 }}>
-                  <div style={{ width: 30, height: 30, borderRadius: 10, background: toneSoft(cc.tone), display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                    <cc.icon size={14} color={toneColor(cc.tone)} />
-                  </div>
-                  <div>
-                    <span style={{ fontFamily: "Inter, sans-serif", fontSize: 11.5, fontWeight: 600, color: c.ink, lineHeight: 1.25, display: "block" }}>{cc.name}</span>
-                    <span style={{ fontFamily: "Inter, sans-serif", fontSize: 9.5, color: c.inkFaint }}>Coming soon</span>
-                  </div>
-                </div>
-              ))}
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: expandedCalc ? 16 : 0 }}>
+              {calcList.map((cc, i) => {
+                const isOpen = cc.enabled && expandedCalc === "diabetes";
+                return (
+                  <button
+                    key={i}
+                    onClick={() => cc.enabled && setExpandedCalc(isOpen ? null : "diabetes")}
+                    style={{
+                      textAlign: "left", background: isOpen ? c.primarySoft : c.surfaceSolid,
+                      border: `1px solid ${isOpen ? c.primary : c.border}`, borderRadius: 14, padding: 12,
+                      display: "flex", alignItems: "center", gap: 9, cursor: cc.enabled ? "pointer" : "default",
+                      opacity: cc.enabled ? 1 : 0.55,
+                    }}
+                  >
+                    <div style={{ width: 30, height: 30, borderRadius: 10, background: toneSoft(cc.tone), display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                      <cc.icon size={14} color={toneColor(cc.tone)} />
+                    </div>
+                    <div>
+                      <span style={{ fontFamily: "Inter, sans-serif", fontSize: 11.5, fontWeight: 600, color: c.ink, lineHeight: 1.25, display: "block" }}>{cc.name}</span>
+                      <span style={{ fontFamily: "Inter, sans-serif", fontSize: 9.5, color: c.inkFaint }}>{cc.enabled ? (isOpen ? "Tap to close" : "Tap to open") : "Coming soon"}</span>
+                    </div>
+                  </button>
+                );
+              })}
             </div>
+
+            {expandedCalc === "diabetes" && <DiabetesExchangeBrowser c={c} />}
           </>
         )}
       </div>
