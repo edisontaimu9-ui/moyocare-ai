@@ -1,6 +1,6 @@
 import {
   collection, addDoc, deleteDoc, doc, onSnapshot,
-  query, orderBy, where, Timestamp, serverTimestamp,
+  query, orderBy, where, limit, Timestamp, serverTimestamp,
 } from "firebase/firestore";
 import { db } from "./config.js";
 
@@ -39,6 +39,20 @@ export function subscribeTodaysMealLogs(uid, onChange, onError) {
     orderBy("loggedAt", "asc")
   );
 
+  return onSnapshot(
+    q,
+    (snap) => onChange(snap.docs.map((d) => ({ id: d.id, ...d.data() }))),
+    onError
+  );
+}
+
+/**
+ * Real-time subscription to the most recent N meal logs across all days
+ * (newest first) — used for a "recent activity" feed rather than a
+ * single day's total.
+ */
+export function subscribeRecentMealLogs(uid, count, onChange, onError) {
+  const q = query(mealLogsRef(uid), orderBy("loggedAt", "desc"), limit(count));
   return onSnapshot(
     q,
     (snap) => onChange(snap.docs.map((d) => ({ id: d.id, ...d.data() }))),

@@ -9,7 +9,7 @@ const NUTRIENT_LABELS = [
   ["sodium_mg", "Sodium", "mg"],
 ];
 
-export function FoodResultCard({ c, food, sourceLabel, Card }) {
+export function FoodResultCard({ c, food, sourceLabel, Card, isSaved, onToggleSave }) {
   const stats = NUTRIENT_LABELS.filter(([key]) => food[key] !== null && food[key] !== undefined);
 
   return (
@@ -23,7 +23,13 @@ export function FoodResultCard({ c, food, sourceLabel, Card }) {
             Per 100g{food.category ? ` · ${food.category}` : ""}{sourceLabel ? ` · ${sourceLabel}` : ""}
           </div>
         </div>
-        <Bookmark size={16} color={c.clay} />
+        {onToggleSave ? (
+          <button onClick={() => onToggleSave(food)} style={{ background: "none", border: "none", padding: 4, cursor: "pointer", display: "flex", flexShrink: 0 }} aria-label={isSaved ? "Remove bookmark" : "Save food"}>
+            <Bookmark size={16} color={c.clay} fill={isSaved ? c.clay : "none"} />
+          </button>
+        ) : (
+          <Bookmark size={16} color={c.clay} />
+        )}
       </div>
 
       {stats.length > 0 ? (

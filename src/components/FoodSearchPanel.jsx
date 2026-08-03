@@ -4,8 +4,25 @@ import { Card, SectionLabel } from "./Primitives.jsx";
 import { FoodResultCard } from "./FoodResultCard.jsx";
 import { BarcodeScanner } from "./BarcodeScanner.jsx";
 import { searchFoods, lookupFood, lookupBarcode, ChakudyaError, SOURCE_LABELS } from "../data/chakudyaApi.js";
+import { useAuth } from "../firebase/AuthContext.jsx";
+import { saveFood, unsaveFood, subscribeSavedFoods, foodSlug } from "../firebase/savedFoods.js";
 
 export function FoodSearchPanel({ c }) {
+  const { user } = useAuth();
+  const [savedSlugs, setSavedSlugs] = useState(new Set());
+
+  useEffect(() => {
+    if (!user) { setSavedSlugs(new Set()); return; }
+    return subscribeSavedFoods(user.uid, (foods) => setSavedSlugs(new Set(foods.map((f) => f.id))));
+  }, [user]);
+
+  const toggleSave = (food) => {
+    if (!user) return;
+    const slug = foodSlug(food.food_name);
+    if (savedSlugs.has(slug)) unsaveFood(user.uid, food.food_name);
+    else saveFood(user.uid, food);
+  };
+
   const [query, setQuery] = useState("");
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -120,7 +137,7 @@ export function FoodSearchPanel({ c }) {
         <>
           <SectionLabel c={c}>Scanned result</SectionLabel>
           <div style={{ marginBottom: 16 }}>
-            <FoodResultCard c={c} food={scanResult.food} sourceLabel={SOURCE_LABELS[scanResult.source] || scanResult.source} Card={Card} />
+            <FoodResultCard c={c} food={scanResult.food} sourceLabel={SOURCE_LABELS[scanResult.source] || scanResult.source} Card={Card} isSaved={user && savedSlugs.has(foodSlug(scanResult.food.food_name))} onToggleSave={user ? toggleSave : undefined} />
           </div>
         </>
       )}
@@ -164,7 +181,7 @@ export function FoodSearchPanel({ c }) {
       {selected && (
         <>
           <SectionLabel c={c}>Result</SectionLabel>
-          <FoodResultCard c={c} food={selected} Card={Card} />
+          <FoodResultCard c={c} food={selected} Card={Card} isSaved={user && savedSlugs.has(foodSlug(selected.food_name))} onToggleSave={user ? toggleSave : undefined} />
         </>
       )}
 
@@ -189,7 +206,7 @@ export function FoodSearchPanel({ c }) {
       {external && (
         <>
           <SectionLabel c={c}>Result</SectionLabel>
-          <FoodResultCard c={c} food={external.food} sourceLabel={SOURCE_LABELS[external.source] || external.source} Card={Card} />
+          <FoodResultCard c={c} food={external.food} sourceLabel={SOURCE_LABELS[external.source] || external.source} Card={Card} isSaved={user && savedSlugs.has(foodSlug(external.food.food_name))} onToggleSave={user ? toggleSave : undefined} />
         </>
       )}
     </>
