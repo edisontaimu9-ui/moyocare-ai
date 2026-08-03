@@ -2,14 +2,8 @@ import { useEffect, useState } from "react";
 import { Search, ScanLine, Loader2, AlertCircle } from "lucide-react";
 import { Card, SectionLabel } from "./Primitives.jsx";
 import { FoodResultCard } from "./FoodResultCard.jsx";
-import { searchFoods, lookupFood, ChakudyaError } from "../data/chakudyaApi.js";
-
-const SOURCE_LABELS = {
-  usda_fdc: "USDA FoodData Central",
-  open_food_facts: "Open Food Facts",
-  fatsecret: "FatSecret",
-  local: "Malawi FCT",
-};
+import { BarcodeScanner } from "./BarcodeScanner.jsx";
+import { searchFoods, lookupFood, lookupBarcode, ChakudyaError, SOURCE_LABELS } from "../data/chakudyaApi.js";
 
 export function FoodSearchPanel({ c }) {
   const [query, setQuery] = useState("");
@@ -21,6 +15,11 @@ export function FoodSearchPanel({ c }) {
   const [external, setExternal] = useState(null); // { food, source } | null
   const [externalLoading, setExternalLoading] = useState(false);
   const [externalError, setExternalError] = useState("");
+
+  const [scannerOpen, setScannerOpen] = useState(false);
+  const [scanResult, setScanResult] = useState(null); // { food, source } | null
+  const [scanLoading, setScanLoading] = useState(false);
+  const [scanError, setScanError] = useState("");
 
   // Debounced local search as the person types.
   useEffect(() => {
@@ -66,6 +65,22 @@ export function FoodSearchPanel({ c }) {
     }
   };
 
+  const handleBarcodeDetected = async (code) => {
+    setScannerOpen(false);
+    setScanResult(null);
+    setScanError("");
+    setScanLoading(true);
+    try {
+      const found = await lookupBarcode(code);
+      if (!found) setScanError(`No match for barcode "${code}" in any connected source.`);
+      else setScanResult(found);
+    } catch (err) {
+      setScanError(err instanceof ChakudyaError ? err.message : "Barcode lookup failed. Try again.");
+    } finally {
+      setScanLoading(false);
+    }
+  };
+
   return (
     <>
       <div style={{ display: "flex", alignItems: "center", gap: 10, background: c.surfaceSolid, border: `1px solid ${c.border}`, borderRadius: 14, padding: "11px 14px", marginBottom: 12 }}>
@@ -77,13 +92,42 @@ export function FoodSearchPanel({ c }) {
           style={{ flex: 1, border: "none", outline: "none", background: "transparent", fontFamily: "Inter, sans-serif", fontSize: 13, color: c.ink }}
         />
         {loading && <Loader2 size={15} color={c.inkFaint} style={{ animation: "spin 0.8s linear infinite" }} />}
-        <ScanLine size={16} color={c.clay} />
+        <button onClick={() => setScannerOpen(true)} style={{ background: "none", border: "none", padding: 0, display: "flex", cursor: "pointer" }} aria-label="Scan barcode">
+          <ScanLine size={16} color={c.clay} />
+        </button>
       </div>
       <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
 
-      {query.trim().length < 2 && (
+      {scannerOpen && (
+        <BarcodeScanner c={c} onDetected={handleBarcodeDetected} onClose={() => setScannerOpen(false)} />
+      )}
+
+      {scanLoading && (
+        <Card c={c} style={{ padding: 16, marginBottom: 16, display: "flex", alignItems: "center", gap: 10 }}>
+          <Loader2 size={16} color={c.inkFaint} style={{ animation: "spin 0.8s linear infinite" }} />
+          <span style={{ fontFamily: "Inter, sans-serif", fontSize: 12.5, color: c.inkSoft }}>Looking up scanned barcode…</span>
+        </Card>
+      )}
+
+      {scanError && (
+        <Card c={c} style={{ padding: 14, marginBottom: 16, display: "flex", gap: 9, alignItems: "flex-start" }}>
+          <AlertCircle size={15} color={c.danger} style={{ flexShrink: 0, marginTop: 1 }} />
+          <span style={{ fontFamily: "Inter, sans-serif", fontSize: 12.5, color: c.danger }}>{scanError}</span>
+        </Card>
+      )}
+
+      {scanResult && (
+        <>
+          <SectionLabel c={c}>Scanned result</SectionLabel>
+          <div style={{ marginBottom: 16 }}>
+            <FoodResultCard c={c} food={scanResult.food} sourceLabel={SOURCE_LABELS[scanResult.source] || scanResult.source} Card={Card} />
+          </div>
+        </>
+      )}
+
+      {query.trim().length < 2 && !scanResult && (
         <div style={{ fontFamily: "Inter, sans-serif", fontSize: 12, color: c.inkFaint, padding: "8px 2px" }}>
-          Start typing a food name to search the Malawi Food Composition Table.
+          Start typing a food name, or tap the scan icon to look up a barcode.
         </div>
       )}
 
