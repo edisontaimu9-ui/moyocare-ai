@@ -4,7 +4,7 @@ import { app } from "./config.js";
 // Generate this in Firebase console → Project settings → Cloud Messaging →
 // Web configuration → "Web Push certificates" → Generate key pair. It's a
 // public key (safe to ship in the client), distinct from the apiKey.
-const VAPID_KEY = "PASTE_YOUR_VAPID_PUBLIC_KEY_HERE";
+const VAPID_KEY = "BBqiTK2G4REhhw27XD4z440QSKqYqeND6zObZoABcsuPNhNjWe8z9Jlm3t7GfRrndTCWjlWoKW6duPJIZgSGkDc";
 
 let messagingInstance = null;
 async function getMessagingIfSupported() {
