@@ -38,13 +38,25 @@ async function request(path) {
 }
 
 /**
+ * The local `/foods` table's raw column is `kcal` (plus `measure` and
+ * `weight_g` for portion info) — different from `/foods/lookup`, which the
+ * API normalizes server-side to always include `energy_kcal`. This mirrors
+ * that same normalization client-side so every caller can rely on
+ * `energy_kcal` regardless of which endpoint the row came from, while
+ * keeping the original fields intact too.
+ */
+function normalizeLocalFood(row) {
+  return { ...row, energy_kcal: row.energy_kcal ?? row.kcal ?? null };
+}
+
+/**
  * Search the local Malawi FCT / curated foods table by name.
  * Returns { count, data: Food[] } — data is [] if nothing matched.
  */
 export async function searchFoods(query, { limit = 12 } = {}) {
   const q = encodeURIComponent(query.trim());
   const body = await request(`/foods?search=${q}&limit=${limit}`);
-  return { count: body.count ?? 0, data: body.data ?? [] };
+  return { count: body.count ?? 0, data: (body.data ?? []).map(normalizeLocalFood) };
 }
 
 /**

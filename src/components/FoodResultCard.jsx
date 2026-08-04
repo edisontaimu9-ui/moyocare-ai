@@ -20,7 +20,7 @@ export function FoodResultCard({ c, food, sourceLabel, Card, isSaved, onToggleSa
             {food.food_name || "Unnamed food"}
           </div>
           <div style={{ fontFamily: "Inter, sans-serif", fontSize: 11, color: c.inkFaint, marginTop: 2 }}>
-            Per 100g{food.category ? ` · ${food.category}` : ""}{sourceLabel ? ` · ${sourceLabel}` : ""}
+            {food.measure ? `${food.measure}` : "Per 100g"}{food.category ? ` · ${food.category}` : ""}{sourceLabel ? ` · ${sourceLabel}` : ""}
           </div>
         </div>
         {onToggleSave ? (

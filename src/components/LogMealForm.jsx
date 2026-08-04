@@ -47,7 +47,7 @@ export function LogMealForm({ c, uid, onLogged, onCancel }) {
       await addMealLog(uid, {
         foodName: selected.food_name,
         mealType,
-        portionLabel: "100g",
+        portionLabel: selected.measure || "100g",
         kcal: selected.energy_kcal ?? null,
         protein_g: selected.protein_g ?? null,
         carbs_g: selected.carbs_g ?? null,
@@ -66,7 +66,7 @@ export function LogMealForm({ c, uid, onLogged, onCancel }) {
       <Card c={c} style={{ padding: 16 }}>
         <div style={{ fontFamily: "Fraunces, serif", fontSize: 15, fontWeight: 600, color: c.ink }}>{selected.food_name}</div>
         <div style={{ fontFamily: "Inter, sans-serif", fontSize: 11, color: c.inkFaint, marginTop: 2, marginBottom: 14 }}>
-          Per 100g · {selected.energy_kcal != null ? `${Math.round(selected.energy_kcal)} kcal` : "kcal unavailable"}
+          {selected.measure || "Per 100g"} · {selected.energy_kcal != null ? `${Math.round(selected.energy_kcal)} kcal` : "kcal unavailable"}
         </div>
 
         <div style={{ fontFamily: "Inter, sans-serif", fontSize: 10.5, color: c.inkFaint, marginBottom: 6 }}>Meal type</div>
