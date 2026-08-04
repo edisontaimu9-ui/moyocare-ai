@@ -10,6 +10,17 @@ export default defineConfig({
   plugins: [
     react(),
     VitePWA({
+      // injectManifest (rather than the default generateSW) lets us write
+      // our own service worker (src/sw.js) that handles both offline
+      // precaching AND Firebase Cloud Messaging background push — a single
+      // service worker, since a page can only really rely on one at the
+      // default scope without extra complexity.
+      strategies: "injectManifest",
+      srcDir: "src",
+      filename: "sw.js",
+      injectManifest: {
+        globPatterns: ["**/*.{js,css,html,png,svg,ico}"],
+      },
       registerType: "autoUpdate",
       includeAssets: ["icons/apple-touch-icon.png"],
       manifest: {
@@ -29,11 +40,10 @@ export default defineConfig({
           { src: "icons/icon-512-maskable.png", sizes: "512x512", type: "image/png", purpose: "maskable" },
         ],
       },
-      workbox: {
-        // Cache the app shell so it opens instantly and works offline once
-        // installed. Live data calls (Chakudya API etc.) are not cached
-        // here — add runtimeCaching entries later once endpoints exist.
-        globPatterns: ["**/*.{js,css,html,png,svg,ico}"],
+      devOptions: {
+        // injectManifest doesn't support the dev-mode virtual SW cleanly;
+        // this only affects `npm run dev`, not the deployed build.
+        enabled: false,
       },
     }),
   ],

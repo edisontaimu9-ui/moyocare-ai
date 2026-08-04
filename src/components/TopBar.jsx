@@ -1,10 +1,14 @@
 import { ArrowLeft, Moon, Sun, Bell } from "lucide-react";
 import { MoyoMark } from "./MoyoMark.jsx";
+import { useNotifications } from "../firebase/NotificationsContext.jsx";
+import { NotificationsPanel } from "./NotificationsPanel.jsx";
 
 /* ---------------------------------------------------------------------
    TOP BAR
 --------------------------------------------------------------------- */
 export function TopBar({ c, dark, setDark, title, onBack }) {
+  const { unreadCount, panelOpen, openPanel } = useNotifications();
+
   return (
     <div style={{ padding: "18px 20px 14px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
       <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
@@ -25,11 +29,15 @@ export function TopBar({ c, dark, setDark, title, onBack }) {
         <button onClick={() => setDark(!dark)} style={{ background: c.surface, border: `1px solid ${c.border}`, borderRadius: 12, width: 36, height: 36, display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer" }}>
           {dark ? <Sun size={16} color={c.gold} /> : <Moon size={16} color={c.primary} />}
         </button>
-        <button style={{ background: c.surface, border: `1px solid ${c.border}`, borderRadius: 12, width: 36, height: 36, display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", position: "relative" }}>
+        <button onClick={openPanel} style={{ background: c.surface, border: `1px solid ${c.border}`, borderRadius: 12, width: 36, height: 36, display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", position: "relative" }}>
           <Bell size={16} color={c.ink} />
-          <span style={{ position: "absolute", top: 8, right: 9, width: 6, height: 6, borderRadius: 99, background: c.clay }} />
+          {unreadCount > 0 && (
+            <span style={{ position: "absolute", top: 8, right: 9, width: 6, height: 6, borderRadius: 99, background: c.clay }} />
+          )}
         </button>
       </div>
+
+      {panelOpen && <NotificationsPanel c={c} />}
     </div>
   );
 }
